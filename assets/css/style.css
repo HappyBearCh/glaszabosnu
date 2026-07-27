@@ -110,6 +110,17 @@ p { margin: 0 0 1.1em; }
 .utility .sep { opacity: .35; }
 .utility .util-mail { margin-right: auto; display: inline-flex; align-items: center; gap: 7px; }
 
+@media (max-width: 560px) {
+  /* Three items will not fit on one phone line; centre them and drop the
+     separator rather than letting a lone link wrap onto its own row. */
+  .utility .container { justify-content: center; gap: 14px; }
+  .utility .util-mail { margin-right: 0; }
+  .utility .sep { display: none; }
+}
+@media (max-width: 380px) {
+  .utility .util-mail span, .utility .util-mail { font-size: .78rem; }
+}
+
 /* --------------------------------------------------------------------- Header */
 
 .masthead {
@@ -254,6 +265,13 @@ p { margin: 0 0 1.1em; }
 .hero-sm { padding: clamp(34px, 5vw, 56px) 0; }
 .hero-sm h1 { margin-bottom: .2em; }
 
+@media (max-width: 560px) {
+  /* Some imported titles run to a full sentence; at 2rem they swallow the
+     screen before any content shows. */
+  .hero-sm h1 { font-size: 1.55rem; }
+  .hero h1 { font-size: 1.85rem; }
+}
+
 .breadcrumb {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
   margin: 0 0 14px; padding: 0; list-style: none;
@@ -338,7 +356,7 @@ p { margin: 0 0 1.1em; }
 
 /* --------------------------------------------------------------- Article cards */
 
-.cards { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); }
+.cards { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr)); }
 
 .card {
   display: flex; flex-direction: column;
@@ -442,10 +460,13 @@ p { margin: 0 0 1.1em; }
   -webkit-overflow-scrolling: touch;
 }
 .table-wrap table {
-  width: 100%;
+  /* auto + min-width lets a data table fill the space when it fits and grow
+     past it when it does not, so the wrapper scrolls instead of the columns
+     collapsing to one letter per line. */
+  width: auto;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: .92rem;
-  min-width: 0;
 }
 .table-wrap th, .table-wrap td {
   padding: 10px 14px;
@@ -457,16 +478,41 @@ p { margin: 0 0 1.1em; }
 .table-wrap tr:last-child td { border-bottom: 0; }
 .table-wrap img { margin: 0; box-shadow: none; border-radius: 3px; }
 
+/* Imported articles carry bare URLs as link text; without this they push the
+   whole page sideways on a phone. */
+.legacy, .prose { min-width: 0; }
+.legacy a, .prose a { overflow-wrap: anywhere; }
+.legacy p, .legacy li { overflow-wrap: break-word; }
+.table-wrap { max-width: 100%; }
+
+/* Table cells must NOT break mid-word: if they can break anywhere their
+   min-content width collapses to one character and the columns turn into
+   vertical stacks of letters. They scroll in the wrapper instead.
+   Anchors are listed too: place names in these tables are links, and the
+   anywhere-breaking rule above would otherwise shatter them. */
+.table-wrap td, .table-wrap th, .table-wrap p, .table-wrap li, .table-wrap a {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 @media (max-width: 700px) {
   .legacy img[style*="float"] { float: none !important; margin-inline: auto; }
+  /* Justified text opens rivers of whitespace at phone widths. */
+  .prose > p, .legacy p, .legacy div { text-align: left !important; }
+  .table-wrap th, .table-wrap td { padding: 8px 10px; }
+  .table-wrap table { font-size: .86rem; }
 }
 
 /* --------------------------------------------------------------------- Gallery */
 
 .gallery {
   display: grid; gap: 14px;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
   margin: 0; padding: 0; list-style: none;
+}
+@media (max-width: 620px) {
+  /* One giant photo per row wastes the screen; two read better. */
+  .gallery { gap: 9px; grid-template-columns: repeat(2, 1fr); }
 }
 .gallery figure { margin: 0; }
 .gallery button {
@@ -514,7 +560,7 @@ p { margin: 0 0 1.1em; }
 
 /* ------------------------------------------------------------------ Link list */
 
-.linklist { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); list-style: none; margin: 0; padding: 0; }
+.linklist { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(330px, 100%), 1fr)); list-style: none; margin: 0; padding: 0; }
 .linklist a {
   display: flex; align-items: center; gap: 13px;
   padding: 15px 18px;
@@ -562,7 +608,7 @@ p { margin: 0 0 1.1em; }
 
 /* ---------------------------------------------------------------------- Tiles */
 
-.tiles { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+.tiles { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr)); }
 
 .tile {
   display: flex; flex-direction: column; gap: 14px;
